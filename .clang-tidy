@@ -1,0 +1,8 @@
+Checks: >
+  modernize-*,
+  misc-include-cleaner,
+  -modernize-use-trailing-return-type
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle: none
