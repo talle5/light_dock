@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
-
 #include <wayland-client.h>
 
 namespace unity::shell
@@ -48,9 +47,9 @@ namespace unity::shell
         double m_mouse_y = 0.0;
 
     public:
-        [[nodiscard]] static constexpr uint32_t RecommendedSurfaceHeight()
+        [[nodiscard]] static constexpr int RecommendedSurfaceHeight()
         {
-            return static_cast<uint32_t>((48.0f * kHoverScale) + (6.0f * 2.0f) + kShadowPadding + 1.0f);
+            return static_cast<int>((48.0f * kHoverScale) + (6.0f * 2.0f) + kShadowPadding + 1.0f);
         }
 
         Docky() : m_geometry(0, 0, 1, 74)
@@ -144,7 +143,6 @@ namespace unity::shell
             }
         }
 
-        // Modificado para incluir o botão do mouse
         void HandlePointerClick(double x, double y, int button)
         {
             for (auto& icon : m_icons)
@@ -166,7 +164,6 @@ namespace unity::shell
             }
         }
 
-        // Sobrecarga existente, se ainda for usada em algum lugar
         void HandlePointerClick(double x, double y, const WindowTracker& tracker, wl_seat* seat)
         {
             for (auto& icon : m_icons)

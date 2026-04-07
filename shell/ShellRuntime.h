@@ -35,9 +35,9 @@ struct RenderSurfaceRuntime
         return true;
     }
 
-    [[nodiscard]] bool Resize(uint32_t w, uint32_t h)
+    [[nodiscard]] bool Resize(int w, int h)
     {
-        if (width == (int)w && height == (int)h)
+        if (width == w && height == h)
         {
             return false;
         }
@@ -70,11 +70,11 @@ struct ShellRuntime
             return std::nullopt;
         }
 
-        // Corrigido para ZWLR_LAYER_SURFACE_V1_ANCHOR_*
-        runtime->wayland.CreateSurface(WaylandContext::SurfaceId::TopPanel, 1920, panel_height,
+        // Passando '0' na largura para o Wayland assumir o tamanho do monitor
+        runtime->wayland.CreateSurface(WaylandContext::SurfaceId::TopPanel, 0, panel_height,
             ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP | ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT | ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
 
-        runtime->wayland.CreateSurface(WaylandContext::SurfaceId::Launcher, 1920, dock_height,
+        runtime->wayland.CreateSurface(WaylandContext::SurfaceId::Launcher, 0, dock_height,
             ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM | ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT | ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
 
         runtime->wayland.Roundtrip();

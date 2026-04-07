@@ -94,7 +94,7 @@ private:
     static void pointer_handle_axis_discrete(void*, wl_pointer*, uint32_t, int32_t) {}
 
     static constexpr wl_pointer_listener pointer_listener = {
-        .enter = pointer_handle_enter, // Corrigido: Agora tem handler
+        .enter = pointer_handle_enter,
         .leave = pointer_handle_leave,
         .motion = pointer_handle_motion,
         .button = pointer_handle_button,
@@ -128,8 +128,8 @@ private:
         auto* ctx = static_cast<WaylandContext*>(data);
         for (auto& s : ctx->m_surfaces) {
             if (s.layer_surface == surface) {
-                if (w > 0) s.width = w;
-                if (h > 0) s.height = h;
+                s.width = static_cast<int>(w);
+                s.height = static_cast<int>(h);
                 s.configured = true;
                 break;
             }
@@ -170,21 +170,21 @@ public:
         return s.surface;
     }
 
-    const SurfaceState& GetSurfaceState(SurfaceId id) const { return m_surfaces[static_cast<size_t>(id)]; }
+    [[nodiscard]] const SurfaceState& GetSurfaceState(SurfaceId id) const { return m_surfaces[static_cast<size_t>(id)]; }
 
-    wl_display* GetDisplay() const { return m_display; }
-    wl_registry* GetRegistry() const { return m_registry; }
-    wl_seat* GetSeat() const { return m_seat; }
-    bool Dispatch() const { return wl_display_dispatch(m_display) != -1; }
-    bool Roundtrip() const { return wl_display_roundtrip(m_display) != -1; }
-    bool IsConfigured() const {
+    [[nodiscard]] wl_display* GetDisplay() const { return m_display; }
+    [[nodiscard]] wl_registry* GetRegistry() const { return m_registry; }
+    [[nodiscard]] wl_seat* GetSeat() const { return m_seat; }
+    [[nodiscard]] bool Dispatch() const { return wl_display_dispatch(m_display) != -1; }
+    [[nodiscard]] bool Roundtrip() const { return wl_display_roundtrip(m_display) != -1; }
+    [[nodiscard]] bool IsConfigured() const {
         for (const auto& s : m_surfaces) if (s.layer_surface && !s.configured) return false;
         return true;
     }
 
     ~WaylandContext()
     {
-        for (auto& s : m_surfaces) {
+        for (const auto & s : m_surfaces) {
             if (s.layer_surface) zwlr_layer_surface_v1_destroy(s.layer_surface);
             if (s.surface) wl_surface_destroy(s.surface);
         }

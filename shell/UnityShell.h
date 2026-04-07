@@ -9,21 +9,20 @@
 
 class UnityShell
 {
-    static constexpr uint32_t kPanelHeight = 24;
-    static constexpr uint32_t kDockHeight = unity::shell::Docky::RecommendedSurfaceHeight();
+    static constexpr auto kDockWidth = 24;
+    static constexpr auto kDockHeight = unity::shell::Docky::RecommendedSurfaceHeight();
     static constexpr auto kAutoHideDelay = std::chrono::milliseconds(250);
 
     std::unique_ptr<ShellRuntime> m_runtime;
     unity::shell::Docky m_docky;
-    nux::Rect m_dock_geometry;
     bool m_hide_pending = false;
     std::chrono::steady_clock::time_point m_hide_deadline{};
-    bool m_launcher_visible = true; // Começa visível para teste
+    bool m_launcher_visible = true;
 
 public:
     static std::optional<std::unique_ptr<UnityShell>> Create()
     {
-        auto runtime = ShellRuntime::Create(kPanelHeight, kDockHeight);
+        auto runtime = ShellRuntime::Create(kDockWidth, kDockHeight);
         if (!runtime) return std::nullopt;
 
         auto shell = std::unique_ptr<UnityShell>(new UnityShell(std::move(runtime.value())));
@@ -42,10 +41,9 @@ public:
 
 private:
     explicit UnityShell(std::unique_ptr<ShellRuntime> runtime)
-        : m_runtime(std::move(runtime)),
-          m_dock_geometry(m_runtime->DockGeometry())
+        : m_runtime(std::move(runtime))
     {
-        m_docky.SetGeometry(m_dock_geometry);
+        m_docky.SetGeometry(m_runtime->DockGeometry());
     }
 
     void BindCallbacks()
@@ -85,8 +83,7 @@ private:
     {
         if (m_runtime->SyncDockSurface())
         {
-            m_dock_geometry = m_runtime->DockGeometry();
-            m_docky.SetGeometry(m_dock_geometry);
+            m_docky.SetGeometry(m_runtime->DockGeometry());
         }
 
         auto& launcher_runtime = m_runtime->Surface(ShellRuntime::kLauncherSurfaceId);
