@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <utility>
 #include "Math/Rect.h"
 
 class Renderer2D;
@@ -17,7 +18,7 @@ public:
     std::string m_tooltipText;
     std::string m_appId;
 
-    Icon(const nux::Rect& rect = {0,0,0,0}) : geo(rect) {}
+    explicit Icon(nux::Rect  rect = {0,0,0,0}) : geo(std::move(rect)) {}
     virtual ~Icon() = default;
 
     virtual void SetPosition(float x, float y) { geo.x = x; geo.y = y; }
@@ -26,7 +27,7 @@ public:
     virtual void SetTexture(unsigned int tex) { m_textureId = tex; }
 
     void SetAppId(const std::string& id) { m_appId = id; }
-    std::string GetAppId() const { return m_appId; }
+    [[nodiscard]] std::string_view GetAppId() const { return m_appId; }
 
     void SetRunning(bool running) { m_running = running; }
 
@@ -34,10 +35,7 @@ public:
     virtual void OnClick() { /* Ação padrão: abrir app */ }
     virtual void OnContextClick() { /* Ação: abrir menu de contexto */ }
 
-    virtual void Draw(Renderer2D& renderer)
-    {
-        // Implementação básica de desenho ou override nas subclasses
-    }
+    virtual void Draw(Renderer2D& renderer) = 0;
 };
 
 } // namespace unity::shell
