@@ -2,77 +2,43 @@
 #define UNITY_SHELL_WAYLAND_SHADER_H
 #include <GLES3/gl3.h>
 #include <iostream>
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <array>
 
 class Shader
 {
 public:
+
+    enum Types
+    {
+        VERTEX,
+        FRAGMENT,
+        PROGRAM
+    };
+
     GLuint ID{0};
+    Shader() = default;
 
-    void LoadFromFile(const std::string& vertexPath, const std::string& fragmentPath)
+    void Compile(const char * vCode, const char * fCode)
     {
-        const std::string base_path = "/home/talles/Documentos/code/c++/unity/shaders/";
-        std::string vertexCode;
-        std::string fragmentCode;
-        std::ifstream vShaderFile;
-        std::ifstream fShaderFile;
-
-        vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-        try
-        {
-            vShaderFile.open(base_path + vertexPath);
-            fShaderFile.open(base_path + fragmentPath);
-            std::stringstream vShaderStream, fShaderStream;
-
-            vShaderStream << vShaderFile.rdbuf();
-            fShaderStream << fShaderFile.rdbuf();
-
-            vShaderFile.close();
-            fShaderFile.close();
-
-            vertexCode = vShaderStream.str();
-            fragmentCode = fShaderStream.str();
-        }
-        catch (std::ifstream::failure& e)
-        {
-            std::cout << "⚠️ | ERRO::SHADER: Ficheiro não encontrado ou inacessível!\n"
-                << "Caminho V: " << vertexPath << "\n"
-                << "Caminho F: " << fragmentPath << std::endl;
-            return;
-        }
-
-        Compile(vertexCode, fragmentCode);
-    }
-
-    void Compile(const std::string& vertexSource, const std::string& fragmentSource)
-    {
-
-        const char* vCode = vertexSource.c_str();
-        const char* fCode = fragmentSource.c_str();
-
         // Vertex Shader
         GLuint sVertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(sVertex, 1, &vCode, nullptr);
         glCompileShader(sVertex);
-        CheckCompileErrors(sVertex, "VERTEX");
+        CheckCompileErrors(sVertex, VERTEX);
 
         // Fragment Shader
         GLuint sFragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(sFragment, 1, &fCode, nullptr);
         glCompileShader(sFragment);
-        CheckCompileErrors(sFragment, "FRAGMENT");
+        CheckCompileErrors(sFragment, FRAGMENT);
 
         // Shader Program
         this->ID = glCreateProgram();
         glAttachShader(this->ID, sVertex);
         glAttachShader(this->ID, sFragment);
         glLinkProgram(this->ID);
-        CheckCompileErrors(this->ID, "PROGRAM");
+        CheckCompileErrors(this->ID, PROGRAM);
 
         glDeleteShader(sVertex);
         glDeleteShader(sFragment);
@@ -110,13 +76,13 @@ public:
     }
 
 private:
-    static void CheckCompileErrors(GLuint object, std::string type)
+    static void CheckCompileErrors(GLuint object, Types type)
     {
         int success;
 
         std::array<char,1024> infoLog = {};
 
-        if (type != "PROGRAM")
+        if (type != PROGRAM)
         {
             glGetShaderiv(object, GL_COMPILE_STATUS, &success);
             if (!success)

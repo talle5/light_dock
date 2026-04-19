@@ -39,7 +39,6 @@ class LauncherIcon : public Icon
             m_textures_loaded = true;
         }
 
-        // Estética baseada no estado da classe base
         float r = 0.2f, g = 0.2f, b = 0.2f, a = 0.5f;
         float shine_intensity = 0.55f;
 
@@ -81,10 +80,8 @@ class LauncherIcon : public Icon
         float menu_x = geo.x + (geo.w / 2.0f) - (menu_w / 2.0f);
         float menu_y = geo.y - menu_h - 10.0f; // Menu aparece acima do ícone
 
-        // Fundo do menu
         renderer.DrawSquircle(menu_x, menu_y, menu_w, menu_h, 0.1f, 0.1f, 0.12f, 0.98f, 8.0f);
 
-        // Itens (mockup visual por enquanto)
         renderer.DrawRect(menu_x + 5.0f, menu_y + 10.0f, menu_w - 10.0f, 35.0f, 0.2f, 0.2f, 0.25f,
                           0.8f);
         renderer.DrawRect(menu_x + 5.0f, menu_y + 55.0f, menu_w - 10.0f, 35.0f, 0.2f, 0.2f, 0.25f,

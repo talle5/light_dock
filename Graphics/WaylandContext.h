@@ -6,7 +6,6 @@
 #include <linux/input-event-codes.h>
 #include <wayland-client.h>
 #include <variant>
-#include <algorithm>
 
 extern "C" {
 #include "../layer-shell/wlr-layer-shell-unstable-v1-protocol.h"
@@ -139,8 +138,7 @@ class WaylandContext
     static void layer_configure(void *data, zwlr_layer_surface_v1 *surface, uint32_t serial,
                                 uint32_t w, uint32_t h)
     {
-        auto *ctx = static_cast<WaylandContext *>(data);
-        for (auto &s : ctx->m_surfaces) {
+        for (auto *ctx = static_cast<WaylandContext *>(data); auto &s : ctx->m_surfaces) {
             if (const auto *role = std::get_if<LayerRole>(&s.role);
                 role && role->handle == surface) {
                 s.width      = static_cast<int>(w);
@@ -206,7 +204,6 @@ class WaylandContext
 
     [[nodiscard]] bool IsConfigured() const
     {
-        // Corrigido: Verifica apenas superfícies que foram realmente alocadas
         for (size_t i = 0; i < static_cast<size_t>(SurfaceId::Count); ++i) {
             if (m_surfaces[i].surface && !m_surfaces[i].configured) return false;
         }

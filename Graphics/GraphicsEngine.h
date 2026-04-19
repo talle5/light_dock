@@ -10,7 +10,6 @@ namespace nux
 {
     class GraphicsEngine
     {
-    private:
         inline static EGLDisplay shared_egl_display = EGL_NO_DISPLAY;
         inline static EGLContext shared_egl_context = EGL_NO_CONTEXT;
         inline static EGLConfig shared_egl_config = nullptr;

@@ -144,7 +144,6 @@ namespace unity::shell
             }
         }
 
-        // Método unificado para lidar com cliques do mouse
         void HandlePointerClick(double x, double y, int button, WindowTracker& tracker, wl_seat* seat)
         {
             for (auto& icon : m_icons)

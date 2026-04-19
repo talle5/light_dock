@@ -8,7 +8,7 @@
 class UnityShell
 {
     static constexpr auto kDockWidth     = 24;
-    static constexpr auto kDockHeight    = unity::shell::Docky::RecommendedSurfaceHeight();
+    static constexpr auto kDockHeight = unity::shell::Docky::RecommendedSurfaceHeight();
     static constexpr auto kAutoHideDelay = std::chrono::milliseconds(250);
 
     std::unique_ptr<ShellRuntime> m_runtime;
@@ -54,7 +54,6 @@ class UnityShell
                    [](double x, double y, int button, void *data) {
                        auto *self = static_cast<UnityShell *>(data);
                        self->ShowDock();
-                       // Corrigido: Passando tracker e seat
                        self->m_docky.HandlePointerClick(x, y, button, self->m_runtime->tracker, self->m_runtime->wayland.GetSeat());
                    },
                .leave =
@@ -86,7 +85,6 @@ class UnityShell
             m_docky.SetGeometry(m_runtime->DockGeometry());
         }
 
-        // Corrigido: Usando enum SurfaceId em vez de string
         auto &launcher_runtime = m_runtime->Surface(WaylandContext::SurfaceId::Launcher);
         launcher_runtime.engine.BeginFrame();
         launcher_runtime.engine.ClearScreen(0.0f, 0.0f, 0.0f, 0.0f);

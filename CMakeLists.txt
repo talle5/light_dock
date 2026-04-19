@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(unity-shell-wayland)
+project(ligth-dock)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,6 +22,7 @@ add_executable(unity_shell
         Graphics/WaylandContext.h
         Graphics/WindowTracker.h
         XdgUtility.h
+        Graphics/shaders.h
 )
 
 target_include_directories(unity_shell PRIVATE

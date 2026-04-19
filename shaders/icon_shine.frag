@@ -9,7 +9,7 @@ uniform float intensity;
 out vec4 f;
 
 void main() {
-    // --- 1. SHAPE (melhor AA) ---
+    // --- 1. SHAPE ---
     vec2 size = max(dimensions, vec2(1.0));
     vec2 center = size * 0.5;
     vec2 p = (f_uv * size) - center;
@@ -20,7 +20,7 @@ void main() {
 
     float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
 
-    // 🔥 anti-alias adaptativo
+    // anti-alias
     float aa = fwidth(d);
     float alpha_mask = 1.0 - smoothstep(0.0, aa, d);
 
@@ -30,7 +30,7 @@ void main() {
     vec2 uv = f_uv;
     vec2 centered = uv * 2.0 - 1.0;
 
-    // --- 3. BASE LIGHT (mais suave) ---
+    // --- 3. BASE LIGHT---
     vec2 light_source = vec2(0.5, 1.0);
     vec2 offset = uv - light_source;
 
@@ -41,14 +41,14 @@ void main() {
     float volume_light = smoothstep(0.9, 0.0, dist);
     volume_light = pow(volume_light, 1.8); // mais suave
 
-    // --- 4. HIGHLIGHT DIRECIONAL (novo) ---
+    // --- 4. HIGHLIGHT DIRECIONAL---
     vec2 dir = normalize(vec2(0.8, -0.6));
     float spec = dot(centered, dir);
 
     spec = smoothstep(0.2, 0.8, spec);
     spec = pow(spec, 4.0); // brilho concentrado
 
-    // --- 5. SOMBRA LEVE (profundidade) ---
+    // --- 5. SOMBRA LEVE---
     float shadow = smoothstep(0.2, 1.2, centered.y + 0.2);
 
     // --- 6. COMBINAÇÃO FINAL ---

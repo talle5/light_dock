@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -25,7 +24,6 @@ struct IconTheme {
     std::vector<std::filesystem::path> base_paths;
 };
 
-// Cache global interno ao namespace para evitar re-parse de disco
 inline std::unordered_map<std::string, IconTheme> g_theme_cache;
 
 inline std::vector<std::string> Split(const std::string& s, char delim) {
@@ -120,7 +118,6 @@ inline std::string GetBestIconPath(const std::string& app_id, int size = 48) {
     static const auto search_paths = GetIconSearchPaths();
     std::string icon_name = app_id;
 
-    // Busca rápida do nome do ícone no .desktop
     for (const auto& dir : search_paths) {
         auto p = std::filesystem::path(dir).parent_path() / "applications" / (app_id + ".desktop");
         if (std::filesystem::exists(p)) {
@@ -131,7 +128,6 @@ inline std::string GetBestIconPath(const std::string& app_id, int size = 48) {
         }
     }
 
-    // Algoritmo oficial: Tema atual -> hicolor -> pixmaps
     std::string path = LookupIcon("Adwaita", icon_name, size, search_paths);
     if (path.empty()) path = LookupIcon("hicolor", icon_name, size, search_paths);
     if (path.empty()) {
