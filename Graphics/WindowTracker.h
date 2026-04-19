@@ -178,7 +178,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool ToggleMinimizeOrActivateApp(const std::string& app_id, wl_seat* seat) const
+    [[nodiscard]] bool ToggleMinimizeOrActivateApp(const std::string_view app_id, wl_seat* seat) const
     {
         if (!seat || app_id.empty())
         {
@@ -284,10 +284,10 @@ private:
             return;
         }
 
-        m_open_apps[toplevel] = OpenApp{toplevel, "", ""};
+        m_open_apps[toplevel] = OpenApp{.handle=toplevel, .title="", .app_id=""};
         std::cout << "[WindowTracker] window created: handle=" << toplevel << '\n';
 
-        static const zwlr_foreign_toplevel_handle_v1_listener handle_listener = {
+        static constexpr zwlr_foreign_toplevel_handle_v1_listener handle_listener = {
             .title=handle_title_c,
             .app_id=handle_app_id_c,
             .output_enter=handle_output_enter_c,

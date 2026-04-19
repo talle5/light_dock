@@ -31,10 +31,7 @@ public:
 
     void SetRunning(bool running) { m_running = running; }
 
-    // Eventos de clique
-    virtual void OnClick() { /* Ação padrão: abrir app */ }
-    virtual void OnContextClick() { /* Ação: abrir menu de contexto */ }
-
+    virtual void OnClick() { /* Ação: abrir menu de contexto */ }
     virtual void Draw(Renderer2D& renderer) = 0;
 };
 

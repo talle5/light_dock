@@ -25,6 +25,7 @@ add_executable(unity_shell
         Graphics/stb_image.cpp
         Graphics/WaylandContext.h
         Graphics/WindowTracker.h
+        XdgUtility.h
 )
 
 target_include_directories(unity_shell PRIVATE

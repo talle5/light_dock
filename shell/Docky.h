@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <wayland-client.h>
+#include <string_view>
 
 namespace unity::shell
 {
@@ -24,8 +25,8 @@ namespace unity::shell
 
     class Docky
     {
-        inline static constexpr float kHoverScale = 1.6f;
-        inline static constexpr float kShadowPadding = 6.0f;
+        static constexpr float kHoverScale = 1.6f;
+        static constexpr float kShadowPadding = 6.0f;
 
         struct ComputedLayout
         {
@@ -143,7 +144,8 @@ namespace unity::shell
             }
         }
 
-        void HandlePointerClick(double x, double y, int button)
+        // Método unificado para lidar com cliques do mouse
+        void HandlePointerClick(double x, double y, int button, WindowTracker& tracker, wl_seat* seat)
         {
             for (auto& icon : m_icons)
             {
@@ -152,35 +154,18 @@ namespace unity::shell
                     continue;
                 }
 
-                if (button == 1) // Botão esquerdo
+                if (button == 1) // Botão esquerdo: Abrir/Alternar aplicativo
                 {
-                    icon.OnClick();
+                    icon.OnClick(); // Chama o evento virtual do ícone
+                    if (!tracker.ToggleMinimizeOrActivateApp(icon.GetAppId(), seat))
+                    {
+                        LaunchApp(icon.GetAppId());
+                    }
                 }
-                else if (button == 3) // Botão direito
+                else if (button == 3) // Botão direito: Abrir menu de contexto
                 {
                     icon.ToggleMenu();
                 }
-                break;
-            }
-        }
-
-        void HandlePointerClick(double x, double y, const WindowTracker& tracker, wl_seat* seat)
-        {
-            for (auto& icon : m_icons)
-            {
-                if (!icon.geo.IsPointInside(static_cast<int>(x), static_cast<int>(y)))
-                {
-                    continue;
-                }
-
-                // Por padrão, esta sobrecarga tratará como clique esquerdo
-                icon.OnClick();
-
-                if (!tracker.ToggleMinimizeOrActivateApp(icon.GetAppId(), seat))
-                {
-                    LaunchApp(icon.GetAppId());
-                }
-
                 break;
             }
         }
@@ -292,7 +277,7 @@ namespace unity::shell
             return layout;
         }
 
-        static bool IsSafeCommandToken(const std::string& app_id)
+        static bool IsSafeCommandToken(const std::string_view app_id)
         {
             return !app_id.empty() &&
                 std::ranges::all_of(app_id, [](const unsigned char ch)
@@ -301,15 +286,15 @@ namespace unity::shell
                 });
         }
 
-        static void LaunchApp(const std::string& app_id)
+        static void LaunchApp(const std::string_view app_id)
         {
             if (!IsSafeCommandToken(app_id))
             {
                 return;
             }
 
-            const std::string command = app_id + " >/dev/null 2>&1 &";
+            const std::string command = std::string(app_id) + " >/dev/null 2>&1 &";
             std::system(command.c_str());
         }
     };
-} // namespace unity::launcher
+} // namespace unity::shell
