@@ -11,11 +11,7 @@ pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-egl wayland-cursor)
 pkg_check_modules(EGL REQUIRED egl)
 pkg_check_modules(GLES REQUIRED glesv2)
 
-#pkg_check_modules(GDK3 REQUIRED gdk-3.0)
-#pkg_check_modules(GLIB REQUIRED glib-2.0 gobject-2.0)
-#pkg_check_modules(CAIRO REQUIRED cairo)
-#pkg_check_modules(SIGC REQUIRED sigc++-2.0)
-#pkg_check_modules(AYATANA_INDICATOR REQUIRED ayatana-indicator3-0.4)
+add_subdirectory(lunasvg)
 
 add_executable(unity_shell
         main.cpp
@@ -37,22 +33,13 @@ target_include_directories(unity_shell PRIVATE
     ${WAYLAND_INCLUDE_DIRS}
     ${EGL_INCLUDE_DIRS}
     ${GLES_INCLUDE_DIRS}
-#    ${GDK3_INCLUDE_DIRS}
-#    ${GLIB_INCLUDE_DIRS}
-#    ${AYATANA_INDICATOR_INCLUDE_DIRS}
 )
 
 target_link_libraries(unity_shell
     ${WAYLAND_LIBRARIES}
     ${EGL_LIBRARIES}
     ${GLES_LIBRARIES}
-#    ${GDK3_LIBRARIES}
-#    ${GLIB_LIBRARIES}
-#    ${CAIRO_LIBRARIES}
-#    ${SIGC_LIBRARIES}
-#    ${AYATANA_INDICATOR_LIBRARIES}
-    pthread
-    dl
+    lunasvg
 )
 
 target_compile_definitions(unity_shell PRIVATE

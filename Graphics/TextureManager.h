@@ -1,6 +1,5 @@
 #pragma once
-#include "../nanosvg/nanosvg.h"
-#include "../nanosvg/nanosvgrast.h"
+#include <lunasvg.h>
 #include "XdgUtility.h"
 #include "stb_image.h"
 #include <iostream>
@@ -37,17 +36,14 @@ class TextureManager
         if (full_path.ends_with(".svg")) 
         {
             int w = 0, h = 0;
-            // Pedimos ao SVG para ser rasterizado em 256x256 (tamanho premium para docas)
-            auto pixels = LoadSvgToPixels(full_path, 256, w, h);
-            if (pixels.has_value()) {
+            if (const auto pixels = LoadSvgToPixels(full_path, 256, w, h); pixels.has_value()) {
                 tex = UploadTexture(pixels.value().data(), w, h, true);
             }
         } 
         else
         {
             int w = 0, h = 0, ch = 0;
-            unsigned char *data = stbi_load(full_path.c_str(), &w, &h, &ch, 4);
-            if (data) {
+            if (unsigned char *data = stbi_load(full_path.c_str(), &w, &h, &ch, 4)) {
                 tex = UploadTexture(data, w, h, true);
                 stbi_image_free(data);
             } else {
@@ -95,7 +91,7 @@ class TextureManager
 
         if (tex == 0)
         {
-            tex = GetTextureFromFile("resources/launcher_bfb.png");
+            tex = GetTextureFromFile("default.png");
         }
 
         texture_cache_[cache_key] = tex;
@@ -128,25 +124,20 @@ class TextureManager
 
     std::optional<std::vector<unsigned char>> LoadSvgToPixels(const std::string &filepath, int target_size, int &out_w, int &out_h)
     {
-        NSVGimage *image = nsvgParseFromFile(filepath.c_str(), "px", 96.0f);
-        if (!image) return std::nullopt;
+        const auto document = lunasvg::Document::loadFromFile(filepath);
+        if (!document) return std::nullopt;
 
-        NSVGrasterizer *rast = nsvgCreateRasterizer();
-        if (!rast) {
-            nsvgDelete(image); // Evita leak aqui também!
-            return std::nullopt;
+        const auto bitmap = document->renderToBitmap(target_size, target_size);
+        if (bitmap.isNull()) return std::nullopt;
+
+        out_w = bitmap.width();
+        out_h = bitmap.height();
+
+        std::vector pixels(bitmap.data(), bitmap.data() + (out_w * out_h * 4));
+
+        for (size_t i = 0; i < pixels.size(); i += 4) {
+            std::swap(pixels[i], pixels[i+2]);
         }
-
-        float scale = static_cast<float>(target_size) / std::max(image->width, image->height);
-        out_w = static_cast<int>(image->width * scale);
-        out_h = static_cast<int>(image->height * scale);
-
-        std::vector<unsigned char> pixels(out_w * out_h * 4);
-
-        nsvgRasterize(rast, image, 0, 0, scale, pixels.data(), out_w, out_h, out_w * 4);
-
-        nsvgDeleteRasterizer(rast);
-        nsvgDelete(image);
 
         return pixels;
     }
