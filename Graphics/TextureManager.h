@@ -10,7 +10,7 @@ class TextureManager
 {
 
     std::unordered_map<std::string, GLuint> texture_cache_;
-    std::mutex m_cache_mutex; // O Cadeado para permitir o uso em Worker Threads!
+    std::mutex m_cache_mutex;
     TextureManager() { stbi_set_flip_vertically_on_load(1); }
 
     public:
@@ -24,7 +24,7 @@ class TextureManager
     {
         if (path.empty()) return 0;
 
-        const std::string full_path = NormalizeTexturePath(path); // Assumindo que isto vem do seu XdgUtility
+        const std::string full_path = NormalizeTexturePath(path);
 
         {
             std::scoped_lock lock(m_cache_mutex);
@@ -61,6 +61,44 @@ class TextureManager
             texture_cache_[full_path] = tex;
         }
 
+        return tex;
+    }
+
+    // GLuint GetTextureFromMemory(const std::string& unique_name, const unsigned char* buffer, int length) {
+    //     if (buffer == nullptr || length == 0) return 0;
+    //
+    //     if (texture_cache_.contains(unique_name)) return texture_cache_[unique_name];
+    //
+    //     int w, h, ch;
+    //     unsigned char* data = stbi_load_from_memory(buffer, length, &w, &h, &ch, 4);
+    //     if (!data) {
+    //         std::cerr << "❌ [TextureManager] Falha ao descomprimir memória: " << unique_name << std::endl;
+    //         return 0;
+    //     }
+    //
+    //     GLuint tex = UploadTexture(data, w, h);
+    //     stbi_image_free(data);
+    //
+    //     texture_cache_[unique_name] = tex;
+    //     return tex;
+    // }
+
+    GLuint GetAppIconTexture(const std::string& app_id) {
+        const std::string cache_key = "app-icon:" + app_id;
+        if (texture_cache_.contains(cache_key)) return texture_cache_[cache_key];
+
+        GLuint tex = 0;
+        if (const auto icon_path = XdgEnvironment::GetBestIconPath(app_id); !icon_path.empty())
+        {
+            tex = GetTextureFromFile(icon_path);
+        }
+
+        if (tex == 0)
+        {
+            tex = GetTextureFromFile("resources/launcher_bfb.png");
+        }
+
+        texture_cache_[cache_key] = tex;
         return tex;
     }
 
@@ -104,15 +142,13 @@ class TextureManager
         out_h = static_cast<int>(image->height * scale);
 
         std::vector<unsigned char> pixels(out_w * out_h * 4);
-        
-        // Preenche o Vector com a imagem rasterizada
+
         nsvgRasterize(rast, image, 0, 0, scale, pixels.data(), out_w, out_h, out_w * 4);
 
-        // A CORREÇÃO DE OURO: Limpar a memória do NanoSVG!
         nsvgDeleteRasterizer(rast);
         nsvgDelete(image);
 
-        return pixels; // O std::optional usa move semantics por padrão, zero custo de cópia!
+        return pixels;
     }
 
     static std::string NormalizeTexturePath(const std::string& path) {

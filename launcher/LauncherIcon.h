@@ -25,7 +25,7 @@ class LauncherIcon : public Icon
 
     void LoadAssets()
     {
-        auto &tm = nux::TextureManager::Get();
+        auto &tm = TextureManager::Get();
         tex_logo = tm.GetAppIconTexture(m_appId);
     }
 
