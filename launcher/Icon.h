@@ -5,20 +5,17 @@
 
 class Renderer2D;
 
-namespace unity::shell
-{
-
 class Icon
 {
 public:
-    nux::Rect geo;
+    Rect geo;
     bool m_hovered = false;
     bool m_running = false;
     unsigned int m_textureId = 0;
     std::string m_tooltipText;
     std::string m_appId;
 
-    explicit Icon(nux::Rect  rect = {0,0,0,0}) : geo(std::move(rect)) {}
+    explicit Icon(Rect  rect = {0,0,0,0}) : geo(std::move(rect)) {}
     virtual ~Icon() = default;
 
     virtual void SetPosition(float x, float y) { geo.x = x; geo.y = y; }
@@ -34,5 +31,3 @@ public:
     virtual void OnClick() { /* Ação: abrir menu de contexto */ }
     virtual void Draw(Renderer2D& renderer) = 0;
 };
-
-} // namespace unity::shell

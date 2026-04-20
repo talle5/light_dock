@@ -184,8 +184,8 @@ class WaylandContext
             m_layer_shell, s.surface, nullptr, ZWLR_LAYER_SHELL_V1_LAYER_TOP, "unity");
         zwlr_layer_surface_v1_set_size(role.handle, w, h);
         zwlr_layer_surface_v1_set_anchor(role.handle, anchor);
-        if (id == SurfaceId::Launcher)
-            zwlr_layer_surface_v1_set_exclusive_zone(role.handle, h);
+        // if (id == SurfaceId::Launcher)
+        //     zwlr_layer_surface_v1_set_exclusive_zone(role.handle, );
         zwlr_layer_surface_v1_add_listener(role.handle, &layer_listener, this);
 
         s.role = role;
@@ -208,6 +208,25 @@ class WaylandContext
             if (m_surfaces[i].surface && !m_surfaces[i].configured) return false;
         }
         return true;
+    }
+
+    // Exemplo de como restringir o clique apenas onde a doca existe fisicamente
+    void UpdateInputRegion(SurfaceId id, const Rect& dock_rect) const
+    {
+        const auto & s = m_surfaces[static_cast<size_t>(id)];
+
+        // Cria uma nova região
+        wl_region* region = wl_compositor_create_region(m_compositor);
+
+        // Adiciona o retângulo onde a doca realmente é desenhada
+        // Tudo o que estiver fora deste Rect será "transparente ao clique" (Click-through)
+        wl_region_add(region, dock_rect.x, dock_rect.y, dock_rect.w, dock_rect.h);
+
+        // Aplica na superfície
+        wl_surface_set_input_region(s.surface, region);
+
+        // Destrói a região (o Wayland mantém uma cópia interna)
+        wl_region_destroy(region);
     }
 
     ~WaylandContext()

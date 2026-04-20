@@ -8,11 +8,11 @@
 class UnityShell
 {
     static constexpr auto kDockWidth     = 24;
-    static constexpr auto kDockHeight = unity::shell::Docky::RecommendedSurfaceHeight();
+    static constexpr auto kDockHeight    = Docky::RecommendedSurfaceHeight();
     static constexpr auto kAutoHideDelay = std::chrono::milliseconds(250);
 
     std::unique_ptr<ShellRuntime> m_runtime;
-    unity::shell::Docky m_docky;
+    Docky m_docky;
     bool m_hide_pending = false;
     std::chrono::steady_clock::time_point m_hide_deadline{};
     bool m_launcher_visible = true;
@@ -54,7 +54,8 @@ class UnityShell
                    [](double x, double y, int button, void *data) {
                        auto *self = static_cast<UnityShell *>(data);
                        self->ShowDock();
-                       self->m_docky.HandlePointerClick(x, y, button, self->m_runtime->tracker, self->m_runtime->wayland.GetSeat());
+                       self->m_docky.HandlePointerClick(x, y, button, self->m_runtime->tracker,
+                                                        self->m_runtime->wayland.GetSeat());
                    },
                .leave =
                    [](void *data) {
@@ -68,6 +69,9 @@ class UnityShell
 
     void Update()
     {
+        m_runtime->wayland.UpdateInputRegion(WaylandContext::SurfaceId::Launcher,
+                                             m_docky.m_geometry);
+
         m_docky.UpdateOpenApps(m_runtime->tracker.GetOpenApps());
 
         if (!m_runtime->tracker.HasActiveVisibleWindow()) {

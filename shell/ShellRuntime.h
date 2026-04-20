@@ -13,7 +13,7 @@
 #include "../Math/Rect.h"
 
 struct RenderSurfaceRuntime {
-    nux::GraphicsEngine engine;
+    GraphicsEngine engine;
     Renderer2D renderer;
     int width  = 0;
     int height = 0;
@@ -55,7 +55,7 @@ struct ShellRuntime {
     std::array<std::unique_ptr<RenderSurfaceRuntime>,
                static_cast<size_t>(WaylandContext::SurfaceId::Count)>
         surfaces;
-    nux::Rect m_dock_geometry;
+    Rect m_dock_geometry;
 
     static std::optional<std::unique_ptr<ShellRuntime> > Create(uint32_t panel_height,
                                                                 uint32_t dock_height)
@@ -113,7 +113,7 @@ struct ShellRuntime {
         return resized;
     }
 
-    [[nodiscard]] nux::Rect DockGeometry() const { return m_dock_geometry; }
+    [[nodiscard]] Rect DockGeometry() const { return m_dock_geometry; }
 
     private:
 
@@ -129,7 +129,7 @@ struct ShellRuntime {
         return true;
     }
 
-    [[nodiscard]] nux::Rect MakeDockGeometry() const
+    [[nodiscard]] Rect MakeDockGeometry() const
     {
         const auto &state = wayland.GetSurfaceState(WaylandContext::SurfaceId::Launcher);
         return {0, 0, state.width, state.height};

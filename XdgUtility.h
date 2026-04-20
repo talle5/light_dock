@@ -139,7 +139,7 @@ inline std::string GetBestIconPath(const std::string& app_id, int size = 48) {
         }
     }
 
-    return path.empty() ? "resources/default_app_icon.png" : path;
+    return path;
 }
 
 } // namespace XdgEnvironment

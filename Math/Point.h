@@ -1,8 +1,6 @@
 #ifndef POINT2D_INL_H
 #define POINT2D_INL_H
 
-namespace nux
-{
 template <typename T> class Point2D
 {
     public:
@@ -24,9 +22,7 @@ template <typename T> class Point2D
 
     template <typename S> Point2D<T> operator*(S rhs)
     { return Point2D<T>(this->x * rhs, this->y * rhs); }
-
 };
-
 
 template <typename T> class Point3D
 {
@@ -61,7 +57,5 @@ template <typename T> class Point3D
 
     bool operator!=(const Point3D<T> &Pt) const { return !((*this) == Pt); }
 };
-
-}
 
 #endif

@@ -6,8 +6,7 @@
 #include "Icon.h"
 #include <GLES3/gl3.h>
 
-namespace unity::shell
-{
+
 class LauncherIcon : public Icon
 {
     protected:
@@ -18,7 +17,7 @@ class LauncherIcon : public Icon
     bool m_textures_loaded = false;
     GLuint tex_logo{0};
 
-    explicit LauncherIcon(const nux::Rect &g) : Icon(g) {}
+    explicit LauncherIcon(const Rect &g) : Icon(g) {}
 
     void SetPinned(bool pinned) { m_is_pinned = pinned; }
     [[nodiscard]] bool IsPinned() const { return m_is_pinned; }
@@ -88,6 +87,5 @@ class LauncherIcon : public Icon
                           0.8f);
     }
 };
-} // namespace unity::shell
 
 #endif
